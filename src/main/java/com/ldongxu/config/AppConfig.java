@@ -43,4 +43,5 @@ public class AppConfig {
         jndiObjectFactoryBean.setProxyInterface(DataSource.class);
         return jndiObjectFactoryBean;
     }
+
 }
