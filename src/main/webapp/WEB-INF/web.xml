@@ -3,6 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
+  <!--数据源配置方式，设置了DBCP连接池和JNDI两种可选方式，对应参数值（dbcp、 jndi）-->
   <context-param>
     <param-name>spring.profiles.default</param-name>
     <param-value>dbcp</param-value>

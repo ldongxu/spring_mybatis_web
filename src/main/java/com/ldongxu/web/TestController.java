@@ -23,6 +23,7 @@ public class TestController {
         user.setName("test");
         user.setAge(10);
         userMapper.insert(user);
+
         return "ok";
     }
 }

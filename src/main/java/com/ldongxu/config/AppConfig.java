@@ -6,9 +6,10 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.*;
 import org.springframework.context.annotation.ComponentScan.Filter;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -23,19 +24,22 @@ import java.io.IOException;
 @ComponentScan(basePackages = {"com.ldongxu"},
         excludeFilters = {@Filter(EnableWebMvc.class), @Filter(Controller.class)})
 @MapperScan(basePackages = {"com.ldongxu.mapper"})
+@PropertySource("classpath:/jdbc.properties")
 public class AppConfig {
+    @Autowired
+    private Environment evn;
 
     @Profile("dbcp")
     @Bean("dataSource")
     public DataSource dataSource() {
         BasicDataSource ds = new BasicDataSource();
-        ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setUrl("jdbc:mysql://localhost:3306/spring_mybatis_web");
-        ds.setUsername("root");
-        ds.setPassword("123456");
-        ds.setInitialSize(5);
-        ds.setMaxWaitMillis(5000);
-        ds.setMaxTotal(10);
+        ds.setDriverClassName(evn.getProperty("jdbc.driver"));
+        ds.setUrl(evn.getProperty("jdbc.driverUrl"));
+        ds.setUsername(evn.getProperty("jdbc.user"));
+        ds.setPassword(evn.getProperty("jdbc.password"));
+        ds.setInitialSize(evn.getProperty("jdbc.initialSize",Integer.class));
+        ds.setMaxWaitMillis(evn.getProperty("jdbc.maxWaitMillis",Integer.class));
+        ds.setMaxTotal(evn.getProperty("jdbc.maxTotal",Integer.class));
         return ds;
     }
 
