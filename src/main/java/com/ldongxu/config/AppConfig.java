@@ -1,7 +1,16 @@
 package com.ldongxu.config;
 
+import com.google.common.collect.Maps;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.ibatis.logging.slf4j.Slf4jImpl;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.mgt.SessionsSecurityManager;
+import org.apache.shiro.realm.Realm;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by 刘东旭 on 2017/8/16.
@@ -70,4 +80,36 @@ public class AppConfig {
         return sessionFactoryBean;
     }
 
+    @Bean("shiroFilter")
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(){
+        ShiroFilterFactoryBean sffb = new ShiroFilterFactoryBean();
+        sffb.setSecurityManager(this.securityManager());
+        sffb.setLoginUrl("/admin/login");
+        sffb.setUnauthorizedUrl("/admin/refuse");
+        Map<String,String> chainDefinitions = Maps.newHashMap();
+        chainDefinitions.put("/statics/**","anon");
+        chainDefinitions.put("/admin/login","anon");
+        chainDefinitions.put("/admin/refuse","anon");
+        chainDefinitions.put("/admin/logout","anon");
+        sffb.setFilterChainDefinitionMap(chainDefinitions);
+        return sffb;
+    }
+
+
+    public SecurityManager securityManager(){
+        DefaultSecurityManager sm = new DefaultSecurityManager(new Realm() {
+            public String getName() {
+                return null;
+            }
+
+            public boolean supports(AuthenticationToken authenticationToken) {
+                return false;
+            }
+
+            public AuthenticationInfo getAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+                return null;
+            }
+        });
+        return  sm;
+    }
 }
